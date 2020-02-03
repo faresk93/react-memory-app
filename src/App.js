@@ -1,30 +1,51 @@
 import React, {Component} from 'react'
 import shuffle from 'lodash.shuffle'
-
 import './App.css'
-
 import Card from './card/Card'
 import GuessCount from './guess-count/GuessCount'
 import HallOfFame, {FAKE_HOF} from "./HallOfFame";
 
-const SIDE = 6
 const SYMBOLS = '😀🎉💖🎩🐶🐱🦄🐬🌍🌛🌞💫🍎🍌🍓🍐🍟🍿'
 const VISUAL_PAUSE_MSECS = 750
 
 class App extends Component {
+    refTest = React.createRef();
+
+    // lifeCycles
+    constructor(props) {
+        super(props);
+        console.log('constructor')
+    }
+
+    componentDidMount() {
+        console.log('componentDidMount')
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        console.log('componentDidUpdate')
+    }
+
+    componentWillUnmount() {
+        console.log('componentWillUnmount')
+    }
+
+    componentDidCatch(error, errorInfo) {
+        console.log('error', error)
+    }
 
     state = {
-        cards: this.generateCards(),
+        cards: this.generateCards(4),
         currentPair: [],
         matchedCardsIndexes: [],
-        guesses: 0
+        guesses: 0,
+        difficulty: 4
     };
 
-    generateCards() {
+    generateCards(size) {
+        const difficulty = Math.pow(size, 2)
         const result = []
-        const size = SIDE * SIDE
         const candidates = shuffle(SYMBOLS)
-        while (result.length < size) {
+        while (result.length < difficulty) {
             const card = candidates.pop()
             result.push(card, card)
         }
@@ -45,6 +66,15 @@ class App extends Component {
 
         return indexMatched ? 'visible' : 'hidden'
     }
+
+    onHandleDifficulty = (event) => {
+        const difficulty = +event.target.value;
+        this.setState({
+            cards: this.generateCards(difficulty),
+            difficulty: difficulty
+        })
+    };
+
 
     // arrow function for this scope
     handleCardClick = index => {
@@ -73,23 +103,37 @@ class App extends Component {
     }
 
     render() {
+        console.log('render')
         const {cards, guesses, matchedCardsIndexes} = this.state
         const won = matchedCardsIndexes.length === cards.length;
         return (
-            <div className="memory">
-                <GuessCount guesses={guesses}/>
-                {
-                    cards.map((card, index) => (
-                        <Card
-                            key={index}
-                            card={card}
-                            index={index}
-                            feedback={this.getFeedbackForCard(index)}
-                            onClick={this.handleCardClick}
-                        />
-                    ))
-                }
-                {won && <HallOfFame entries={FAKE_HOF}/>}
+            <div ref={this.refTest}>
+                <div className="memory mt-5">
+                    <div className="w-100 mb-3">
+                        <div className="d-flex">
+                            <label className="w-50 my-auto">Choose difficulty: </label>
+                            <select className="form-control" onChange={this.onHandleDifficulty} defaultValue={4}>
+                                <option value="2">Easy</option>
+                                <option value="4">Medium</option>
+                                <option value="6">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+                    <GuessCount guesses={guesses}/>
+                    {
+                        cards.map((card, index) => (
+                            <Card
+                                key={index}
+                                card={card}
+                                index={index}
+                                difficulty={this.state.difficulty}
+                                feedback={this.getFeedbackForCard(index)}
+                                onClick={this.handleCardClick}
+                            />
+                        ))
+                    }
+                    {won && <HallOfFame entries={FAKE_HOF}/>}
+                </div>
             </div>
         )
     }

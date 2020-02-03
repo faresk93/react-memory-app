@@ -4,17 +4,18 @@ import PropTypes from 'prop-types'
 import './HallOfFame.css'
 
 const HallOfFame = ({entries}) => (
-    <table className="hallOfFame">
-        <tbody>
-        {entries.map(({id, date, guesses, player}) => (
-            <tr key={id}>
-                <td className="date">{date}</td>
-                <td className="guesses">{guesses}</td>
-                <td className="player">{player}</td>
-            </tr>
-        ))}
-        </tbody>
-    </table>
+    // <table className="hallOfFame">
+    //     <tbody>
+    //     {entries.map(({id, date, guesses, player}) => (
+    //         <tr key={id}>
+    //             <td className="date">{date}</td>
+    //             <td className="guesses">{guesses}</td>
+    //             <td className="player">{player}</td>
+    //         </tr>
+    //     ))}
+    //     </tbody>
+    // </table>
+    <div className="alert alert-success w-100 text-center">Gagné !</div>
 )
 
 HallOfFame.propTypes = {
