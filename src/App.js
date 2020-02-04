@@ -68,7 +68,7 @@ class App extends Component {
 
 
     // arrow function for this scope
-    handleCardClick = index => {
+    handleCardClick = (index, event) => {
         const {currentPair} = this.state
         if (currentPair.length === 0) {
             this.setState({currentPair: [index]});
@@ -77,12 +77,14 @@ class App extends Component {
         if (currentPair.length === 2) {
             return;
         }
-        this.handleNewPairClosedBy(index)
+        this.handleNewPairClosedBy(index, event)
     };
 
-    handleNewPairClosedBy(index) {
+    handleNewPairClosedBy(index, event) {
         const {cards, currentPair, guesses, matchedCardsIndexes} = this.state
-
+        if (currentPair[0] === index) {
+            return;
+        }
         const newPair = [currentPair[0], index]
         const newGuesses = guesses + 1
         const matched = cards[newPair[0]] === cards[newPair[1]]
@@ -90,6 +92,7 @@ class App extends Component {
         if (matched) {
             this.setState({matchedCardsIndexes: [...matchedCardsIndexes, ...newPair]})
         }
+        event.preventDefault();
         setTimeout(() => this.setState({currentPair: []}), VISUAL_PAUSE_MSECS)
     }
 
@@ -104,7 +107,9 @@ class App extends Component {
                         <span>Game</span>
                     </div>
                     <div className="logo">
-                        <img src="https://talan.com/typo3conf/ext/subtheme_t3kit_talan/Resources/Public/Images/logo-talan.png" alt="logo-Talan"/>
+                        <img
+                            src="https://talan.com/typo3conf/ext/subtheme_t3kit_talan/Resources/Public/Images/logo-talan.png"
+                            alt="logo-Talan"/>
                     </div>
                 </div>
                 <div className="memory mt-5">

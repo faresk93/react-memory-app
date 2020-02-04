@@ -18,7 +18,7 @@ const getDifficultyClass = (difficulty) => {
 const Card = ({card, index, feedback, difficulty, onClick}) => {
     const difficultyClass = getDifficultyClass(difficulty);
     return (
-        <div className={`flip-card ${feedback} ${difficultyClass}`} onClick={_ => onClick(index)}>
+        <div className={`flip-card ${feedback} ${difficultyClass}`} onClick={event => onClick(index, event)}>
             <div className={`flip-card-inner ${feedback !== 'hidden' && 'flipped'}`}>
                 <div className="flip-card-front">
                     {/*{feedback === 'hidden' ? HIDDEN_SYMBOL : card}*/}
