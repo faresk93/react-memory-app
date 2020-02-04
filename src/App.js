@@ -8,22 +8,27 @@ import HighScoreInput from "./HighScoreInput";
 
 export const SYMBOLS = '😀🎉💖🎩🐶🐱🦄🐬🌍🌛🌞💫🍎🍌🍓🍐🍟🍿'
 const VISUAL_PAUSE_MSECS = 750
+const DEFAULT_STATE = {
+    cards: [],
+    currentPair: [],
+    matchedCardsIndexes: [],
+    guesses: 0,
+    difficulty: 4,
+    hallOfFame: null
+}
 
 class App extends Component {
     refTest = React.createRef();
+
+    constructor(props) {
+        super(props);
+        this.state = {...DEFAULT_STATE, cards: this.generateCards(4)};
+    }
 
     componentDidMount() {
         document.title = 'Tick-Tack-Toe'
     }
 
-    state = {
-        cards: this.generateCards(4),
-        currentPair: [],
-        matchedCardsIndexes: [],
-        guesses: 0,
-        difficulty: 4,
-        hallOfFame: null
-    };
 
     // arrow function for this binding
     displayHOF = hallOfFame => {
@@ -58,10 +63,7 @@ class App extends Component {
 
     onHandleDifficulty = (event) => {
         const difficulty = +event.target.value;
-        this.setState({
-            cards: this.generateCards(difficulty),
-            difficulty: difficulty
-        })
+        this.setState({...DEFAULT_STATE, difficulty, cards: this.generateCards(difficulty)})
     };
 
 
@@ -96,10 +98,24 @@ class App extends Component {
         const won = matchedCardsIndexes.length === cards.length;
         return (
             <div ref={this.refTest}>
+                <div className="game">
+                    <div className="title">
+                        <h1>Tic-Tac-Toe</h1>
+                        <span>Game</span>
+                    </div>
+                    <div className="logo">
+                        <img src="https://talan.com/typo3conf/ext/subtheme_t3kit_talan/Resources/Public/Images/logo-talan.png" alt="logo-Talan"/>
+                    </div>
+                </div>
                 <div className="memory mt-5">
+                    <div className="fares">
+                        <h1>By Fares</h1>
+                    </div>
                     <div className="w-100 mb-3">
                         <div className="d-flex">
-                            <label className="w-50 my-auto">Choose difficulty: </label>
+                            <label className="w-50 my-auto">
+                                <span className="badge badge-light difficulty">Choose difficulty: </span>
+                            </label>
                             <select className="form-control" onChange={this.onHandleDifficulty} defaultValue={4}>
                                 <option value="2">Easy</option>
                                 <option value="4">Medium</option>
@@ -108,18 +124,20 @@ class App extends Component {
                         </div>
                     </div>
                     <GuessCount guesses={guesses}/>
-                    {
-                        cards.map((card, index) => (
-                            <Card
-                                key={index}
-                                card={card}
-                                index={index}
-                                difficulty={this.state.difficulty}
-                                feedback={this.getFeedbackForCard(index)}
-                                onClick={this.handleCardClick}
-                            />
-                        ))
-                    }
+                    <div className="cards">
+                        {
+                            cards.map((card, index) => (
+                                <Card
+                                    key={index}
+                                    card={card}
+                                    index={index}
+                                    difficulty={this.state.difficulty}
+                                    feedback={this.getFeedbackForCard(index)}
+                                    onClick={this.handleCardClick}
+                                />
+                            ))
+                        }
+                    </div>
                     {won && (
                         hallOfFame ? <HallOfFame entries={hallOfFame}/> :
                             <HighScoreInput guesses={guesses} onStored={this.displayHOF}/>

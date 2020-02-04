@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 // Guess SFC
 const GuessCount = ({guesses}) => (
-    <div className="guesses">N° of Guesses: <strong>{guesses}</strong></div>
+    <div className="guesses ml-2">N° of Guesses: <strong className="text-white bg-dark p-2">{guesses}</strong></div>
 );
 // Prop Types
 GuessCount.propTypes = {

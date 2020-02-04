@@ -18,11 +18,16 @@ const getDifficultyClass = (difficulty) => {
 const Card = ({card, index, feedback, difficulty, onClick}) => {
     const difficultyClass = getDifficultyClass(difficulty);
     return (
-        <div className={`card ${feedback} ${difficultyClass}`}
-             onClick={_ => onClick(index)}>
-            <span className="symbol">
-                {feedback === 'hidden' ? HIDDEN_SYMBOL : card}
-            </span>
+        <div className={`flip-card ${feedback} ${difficultyClass}`} onClick={_ => onClick(index)}>
+            <div className={`flip-card-inner ${feedback !== 'hidden' && 'flipped'}`}>
+                <div className="flip-card-front">
+                    {/*{feedback === 'hidden' ? HIDDEN_SYMBOL : card}*/}
+                    <span className="symbol">{HIDDEN_SYMBOL}</span>
+                </div>
+                <div className="flip-card-back">
+                    <span className="symbol">{card}</span>
+                </div>
+            </div>
         </div>
     )
 };
