@@ -3,34 +3,17 @@ import shuffle from 'lodash.shuffle'
 import './App.css'
 import Card from './card/Card'
 import GuessCount from './guess-count/GuessCount'
-import HallOfFame, {FAKE_HOF} from "./HallOfFame";
+import HallOfFame from "./HallOfFame";
+import HighScoreInput from "./HighScoreInput";
 
-const SYMBOLS = '😀🎉💖🎩🐶🐱🦄🐬🌍🌛🌞💫🍎🍌🍓🍐🍟🍿'
+export const SYMBOLS = '😀🎉💖🎩🐶🐱🦄🐬🌍🌛🌞💫🍎🍌🍓🍐🍟🍿'
 const VISUAL_PAUSE_MSECS = 750
 
 class App extends Component {
     refTest = React.createRef();
 
-    // lifeCycles
-    constructor(props) {
-        super(props);
-        console.log('constructor')
-    }
-
     componentDidMount() {
-        console.log('componentDidMount')
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        console.log('componentDidUpdate')
-    }
-
-    componentWillUnmount() {
-        console.log('componentWillUnmount')
-    }
-
-    componentDidCatch(error, errorInfo) {
-        console.log('error', error)
+        document.title = 'Tick-Tack-Toe'
     }
 
     state = {
@@ -38,8 +21,14 @@ class App extends Component {
         currentPair: [],
         matchedCardsIndexes: [],
         guesses: 0,
-        difficulty: 4
+        difficulty: 4,
+        hallOfFame: null
     };
+
+    // arrow function for this binding
+    displayHOF = hallOfFame => {
+        this.setState({hallOfFame})
+    }
 
     generateCards(size) {
         const difficulty = Math.pow(size, 2)
@@ -103,8 +92,7 @@ class App extends Component {
     }
 
     render() {
-        console.log('render')
-        const {cards, guesses, matchedCardsIndexes} = this.state
+        const {cards, guesses, matchedCardsIndexes, hallOfFame} = this.state
         const won = matchedCardsIndexes.length === cards.length;
         return (
             <div ref={this.refTest}>
@@ -132,7 +120,10 @@ class App extends Component {
                             />
                         ))
                     }
-                    {won && <HallOfFame entries={FAKE_HOF}/>}
+                    {won && (
+                        hallOfFame ? <HallOfFame entries={hallOfFame}/> :
+                            <HighScoreInput guesses={guesses} onStored={this.displayHOF}/>
+                    )}
                 </div>
             </div>
         )
