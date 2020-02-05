@@ -1,32 +1,69 @@
 import React, {Component} from 'react'
 import shuffle from 'lodash.shuffle'
-import './App.css'
+import './App.scss'
 import Card from './card/Card'
 import GuessCount from './guess-count/GuessCount'
 import HallOfFame from "./HallOfFame";
 import HighScoreInput from "./HighScoreInput";
+import {Timer} from "./timer/Timer";
 
 export const SYMBOLS = '😀🎉💖🎩🐶🐱🦄🐬🌍🌛🌞💫🍎🍌🍓🍐🍟🍿'
 const VISUAL_PAUSE_MSECS = 750
+const SHOW_CARDS_TIMEOUT = 3000
 const DEFAULT_STATE = {
     cards: [],
     currentPair: [],
     matchedCardsIndexes: [],
     guesses: 0,
     difficulty: 4,
-    hallOfFame: null
+    hallOfFame: null,
+    gameStart: false,
+    gameStarted: false,
+    timerOn: false,
+    timerStart: 0,
+    timerTime: 0,
+    countDown: 3
 }
 
 class App extends Component {
-    refTest = React.createRef();
+    timer;
+    countDown;
 
     constructor(props) {
         super(props);
         this.state = {...DEFAULT_STATE, cards: this.generateCards(4)};
     }
 
+    refTest = React.createRef();
+
+    startGame = () => {
+        this.setState({gameStart: true, gameStarted: false, countDown: 3})
+        this.countDown = setInterval(() => {
+            this.setState({
+                countDown: --this.state.countDown
+            })
+        }, 1000)
+        setTimeout(() => {
+            this.setState({gameStarted: true});
+            this.startTimer();
+            clearInterval(this.countDown);
+        }, SHOW_CARDS_TIMEOUT)
+    };
+    startTimer = () => {
+        this.setState({
+            timerOn: true,
+            timerTime: this.state.timerTime,
+            timerStart: Date.now() - this.state.timerTime
+        });
+        this.timer = setInterval(() => {
+            this.setState({
+                timerTime: Date.now() - this.state.timerStart
+            });
+        }, 10);
+    };
+
     componentDidMount() {
-        document.title = 'Tick-Tack-Toe'
+        // document.title = 'Tick-Tack-Toe'
     }
 
 
@@ -47,23 +84,35 @@ class App extends Component {
     }
 
     getFeedbackForCard(index) {
-        const {currentPair, matchedCardsIndexes} = this.state
-        const indexMatched = matchedCardsIndexes.includes(index)
 
-        if (currentPair.length < 2) {
-            return indexMatched || index === currentPair[0] ? 'visible' : 'hidden'
+        if (!this.state.gameStarted) {
+            return 'visible'
+        } else {
+            const {currentPair, matchedCardsIndexes} = this.state
+            const indexMatched = matchedCardsIndexes.includes(index)
+
+            if (currentPair.length < 2) {
+                return indexMatched || index === currentPair[0] ? 'visible' : 'hidden'
+            }
+
+            if (currentPair.includes(index)) {
+                return indexMatched ? 'justMatched' : 'justMismatched'
+            }
+            return indexMatched ? 'visible' : 'hidden'
         }
-
-        if (currentPair.includes(index)) {
-            return indexMatched ? 'justMatched' : 'justMismatched'
-        }
-
-        return indexMatched ? 'visible' : 'hidden'
     }
 
     onHandleDifficulty = (event) => {
         const difficulty = +event.target.value;
-        this.setState({...DEFAULT_STATE, difficulty, cards: this.generateCards(difficulty)})
+        console.log(difficulty)
+        clearInterval(this.timer);
+        this.setState({
+            ...DEFAULT_STATE,
+            difficulty,
+            cards: this.generateCards(difficulty),
+            gameStart: true
+        })
+        this.startGame();
     };
 
 
@@ -92,7 +141,6 @@ class App extends Component {
         if (matched) {
             this.setState({matchedCardsIndexes: [...matchedCardsIndexes, ...newPair]})
         }
-        event.preventDefault();
         setTimeout(() => this.setState({currentPair: []}), VISUAL_PAUSE_MSECS)
     }
 
@@ -101,53 +149,69 @@ class App extends Component {
         const won = matchedCardsIndexes.length === cards.length;
         return (
             <div ref={this.refTest}>
-                <div className="game">
-                    <div className="title">
-                        <h1>Tic-Tac-Toe</h1>
-                        <span>Game</span>
-                    </div>
-                    <div className="logo">
-                        <img
-                            src="https://talan.com/typo3conf/ext/subtheme_t3kit_talan/Resources/Public/Images/logo-talan.png"
-                            alt="logo-Talan"/>
-                    </div>
-                </div>
-                <div className="memory mt-5">
-                    <div className="fares">
-                        <h1>By Fares</h1>
-                    </div>
-                    <div className="w-100 mb-3">
-                        <div className="d-flex">
-                            <label className="w-50 my-auto">
-                                <span className="badge badge-light difficulty">Choose difficulty: </span>
-                            </label>
-                            <select className="form-control" onChange={this.onHandleDifficulty} defaultValue={4}>
-                                <option value="2">Easy</option>
-                                <option value="4">Medium</option>
-                                <option value="6">Hard</option>
-                            </select>
+                {this.state.gameStart ?
+                    (<div className="game-board">
+                        <div className="game">
+                            <div className="title">
+                                <h1>Tic-Tac-Toe</h1>
+                                <span>Game</span>
+                            </div>
+                            <div className="logo">
+                                <img
+                                    src="https://talan.com/typo3conf/ext/subtheme_t3kit_talan/Resources/Public/Images/logo-talan.png"
+                                    alt="logo-Talan"/>
+                            </div>
                         </div>
+                        <div className="memory mt-5">
+                            <div className="fares">
+                                <h1>By Fares</h1>
+                            </div>
+                            <div className="w-100 mb-3">
+                                <div className="d-flex">
+                                    <label className="w-50 my-auto">
+                                        <span className="badge badge-light difficulty">Memory Level: </span>
+                                    </label>
+                                    <select className="form-control" style={{cursor: 'pointer'}}
+                                            onChange={this.onHandleDifficulty}
+                                            value={this.state.difficulty}>
+                                        <option value="2">Turtle</option>
+                                        <option value="4">Elephant</option>
+                                        <option value="6">Dolphin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <GuessCount guesses={guesses}/>
+                            <div className="cards">
+
+                                <div className="timer">
+                                    {this.state.timerOn ? <Timer timerTime={this.state.timerTime}/> : (
+                                        <span>{this.state.countDown}</span>
+                                    )}
+                                </div>
+                                {
+                                    cards.map((card, index) => (
+                                        <Card
+                                            key={index}
+                                            card={card}
+                                            index={index}
+                                            difficulty={this.state.difficulty}
+                                            feedback={this.getFeedbackForCard(index)}
+                                            onClick={this.handleCardClick}
+                                        />
+                                    ))
+                                }
+                            </div>
+                            {won && (
+                                hallOfFame ? <HallOfFame entries={hallOfFame}/> :
+                                    <HighScoreInput guesses={guesses} onStored={this.displayHOF}/>
+                            )}
+                        </div>
+                    </div>) :
+                    <div className="game-start">
+                        <div className="start-button" onClick={this.startGame}>Start Game</div>
                     </div>
-                    <GuessCount guesses={guesses}/>
-                    <div className="cards">
-                        {
-                            cards.map((card, index) => (
-                                <Card
-                                    key={index}
-                                    card={card}
-                                    index={index}
-                                    difficulty={this.state.difficulty}
-                                    feedback={this.getFeedbackForCard(index)}
-                                    onClick={this.handleCardClick}
-                                />
-                            ))
-                        }
-                    </div>
-                    {won && (
-                        hallOfFame ? <HallOfFame entries={hallOfFame}/> :
-                            <HighScoreInput guesses={guesses} onStored={this.displayHOF}/>
-                    )}
-                </div>
+                }
+
             </div>
         )
     }

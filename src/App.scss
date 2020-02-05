@@ -1,0 +1,123 @@
+@font-face {
+  font-family: titleFont;
+  src: url("assets/Angeline Vintage_Demo.ttf");
+}
+
+@font-face {
+  font-family: difficultyFont;
+  src: url("assets/KaushanScript-Regular.otf");
+}
+
+@font-face {
+  font-family: nameFont;
+  src: url("assets/AlexBrush-Regular.ttf");
+}
+
+.memory {
+  display: flex;
+  flex-wrap: wrap;
+  width: 600px;
+  margin: auto;
+  user-select: none;
+  position: relative;
+}
+
+.cards {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.difficulty, .guesses {
+  font-family: difficultyFont, serif;
+  font-size: 1.5em !important;
+}
+
+.fares {
+  position: absolute;
+  border-radius: 10px 0 10px 0;
+  top: -150px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-family: nameFont, serif;
+  font-size: 3em;
+  background: rgba(0, 0, 0, .5);
+  color: #FFF;
+  padding: 10px 20px;
+  max-width: max-content;
+  margin: auto;
+}
+
+.fares h1 {
+}
+
+.game {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+.game .title {
+  background: rgba(255, 255, 255, .8);
+  border-radius: 10px;
+  padding: 10px;
+  font-family: titleFont, serif;
+  text-align: right;
+  font-size: 2rem;
+}
+
+.game .logo img {
+  height: 50px;
+}
+
+.game-start {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .start-button {
+    font-family: titleFont, serif;
+    font-size: 6em;
+    padding: 20px 40px;
+    background: rgba(32, 201, 151, 0.5);
+    color: white;
+    cursor: pointer;
+    border: solid #eee 3px;
+    transition: all .5s;
+
+    &:hover {
+      background: rgba(32, 201, 151, .8);
+      border: solid #0f6674 3px;
+      transform: scale(1.5);
+    }
+  }
+}
+
+.timer {
+  position: absolute;
+  right: -150px;
+  text-align: center;
+  top: 50%;
+  background-color: rgba(15, 102, 116, 0.7);
+  transform: translateY(-50%);
+  font-family: nameFont, serif;
+  font-size: 2em;
+  color: #FFF;
+  padding: 20px;
+  min-width: 100px;
+  border: #eee solid 3px;
+  border-radius: 0 10px 0 10px;
+
+  h1 {
+    font-size: 1em;
+    word-break: break-word;
+  }
+}
