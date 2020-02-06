@@ -7,7 +7,7 @@ export const Timer = (props) => {
     let hours = Math.floor(timerTime / 3600000)
     return (
         <div className="timer-time">
-            {hours >=1 && hours + 'h : '}{minutes >=1 && minutes + 'm : '}{seconds >= 0 && seconds + 's'}
+            {hours >=1 && hours + 'h : '}{minutes >=1 && minutes + 'm : '}{seconds > 0 && seconds + 's'}
         </div>
     )
 }

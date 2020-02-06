@@ -115,6 +115,11 @@
   min-width: 100px;
   border: #eee solid 3px;
   border-radius: 0 10px 0 10px;
+  transition: all 1s;
+
+  &:hover {
+    background-color: rgba(255, 0, 0, .5);
+  }
 
   h1 {
     font-size: 1em;

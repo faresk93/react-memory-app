@@ -44,6 +44,7 @@ class App extends Component {
                 countDown: this.state.countDown - 1
             })
         }, 1000)
+        clearInterval(this.timer);
         setTimeout(() => {
             this.setState({gameStarted: true});
             this.startTimer();
@@ -51,31 +52,27 @@ class App extends Component {
         }, SHOW_CARDS_TIMEOUT)
     };
     startTimer = () => {
-        clearInterval(this.timer);
         this.setState({
             timerOn: true,
-            timerTime: this.state.timerTime,
-            timerStart: Date.now() - this.state.timerTime
+            timerStart: Date.now()
         });
-        // this.setState({
         this.timer = setInterval(() => {
-            this.setState({
-                timerTime: Date.now() - this.state.timerStart
-            });
+            this.setState((prevState, props) => (
+                {timerTime: Date.now() - prevState.timerStart}
+            ));
         }, 10)
-        console.log('timer', this.timer)
-        // })
     };
-
-    componentDidMount() {
-        // document.title = 'Tick-Tack-Toe'
-    }
-
 
     // arrow function for this binding
     displayHOF = hallOfFame => {
-        this.setState({hallOfFame})
+        this.setState({
+            hallOfFame,
+            timer: null,
+            timerTime: 0,
+            timerStart: 0
+        })
     }
+
 
     generateCards(size) {
         const difficulty = Math.pow(size, 2)
@@ -147,9 +144,7 @@ class App extends Component {
             ), () => {
                 const won = this.state.matchedCardsIndexes.length === cards.length;
                 if (won) {
-                    console.log('won', this.timer)
                     clearInterval(this.timer);
-                    // this.setState({timerOn: false});
                 }
             })
         }
@@ -166,7 +161,7 @@ class App extends Component {
                     (<div className="game-board">
                         <div className="game">
                             <div className="title">
-                                <h1>Tic-Tac-Toe</h1>
+                                <h1>Memory Game</h1>
                                 <span>Game</span>
                             </div>
                             <div className="logo">
