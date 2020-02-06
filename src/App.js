@@ -29,6 +29,15 @@ const DEFAULT_STATE = {
 class App extends Component {
     timer;
     countDown;
+    restartGame = () => {
+        this.setState({
+            ...DEFAULT_STATE,
+            difficulty: this.state.difficulty,
+            cards: this.generateCards(this.state.difficulty)
+        })
+        this.startGame()
+        console.log('restart')
+    };
 
     constructor(props) {
         super(props);
@@ -40,9 +49,9 @@ class App extends Component {
     startGame = () => {
         this.setState({gameStart: true, gameStarted: false, countDown: 3})
         this.countDown = setInterval(() => {
-            this.setState({
-                countDown: this.state.countDown - 1
-            })
+            this.setState((prevState, props) => (
+                {countDown: prevState.countDown - 1}
+            ))
         }, 1000)
         clearInterval(this.timer);
         setTimeout(() => {
@@ -130,7 +139,7 @@ class App extends Component {
     };
 
     handleNewPairClosedBy(index, event) {
-        let {cards, currentPair, guesses, matchedCardsIndexes} = this.state
+        let {cards, currentPair, guesses} = this.state
         if (currentPair[0] === index) {
             return;
         }
@@ -181,7 +190,8 @@ class App extends Component {
                                     </label>
                                     <select className="form-control" style={{cursor: 'pointer'}}
                                             onChange={this.onHandleDifficulty}
-                                            value={this.state.difficulty}>
+                                            value={this.state.difficulty}
+                                            disabled={!this.state.gameStarted}>
                                         <option value="2">Turtle</option>
                                         <option value="4">Elephant</option>
                                         <option value="6">Dolphin</option>
@@ -192,8 +202,16 @@ class App extends Component {
                             <div className="cards">
 
                                 <div className="timer">
-                                    {this.state.timerOn ? <Timer timerTime={this.state.timerTime}/> : (
-                                        <span>{this.state.countDown}</span>
+                                    {won ? (
+                                        <div className="restart">
+                                            <h3 onClick={this.restartGame}>Restart</h3>
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            {this.state.timerOn ? <Timer timerTime={this.state.timerTime}/> : (
+                                                <span>{this.state.countDown}</span>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
                                 {
