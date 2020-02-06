@@ -127,15 +127,17 @@ class App extends Component {
 
     // arrow function for this scope
     handleCardClick = (index, event) => {
-        const {currentPair} = this.state
-        if (currentPair.length === 0) {
-            this.setState({currentPair: [index]});
-            return;
+        if (this.state.gameStarted) {
+            const {currentPair} = this.state
+            if (currentPair.length === 0) {
+                this.setState({currentPair: [index]});
+                return;
+            }
+            if (currentPair.length === 2) {
+                return;
+            }
+            this.handleNewPairClosedBy(index, event)
         }
-        if (currentPair.length === 2) {
-            return;
-        }
-        this.handleNewPairClosedBy(index, event)
     };
 
     handleNewPairClosedBy(index, event) {
