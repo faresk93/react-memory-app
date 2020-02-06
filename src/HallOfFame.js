@@ -5,14 +5,21 @@ import './HallOfFame.css'
 
 const HallOfFame = ({entries}) => (
     <div className="w-100">
-        <div className="alert alert-success w-100 text-center">Gagné !</div>
+        <div className="alert alert-success w-100 text-center">Won !</div>
         <table className="hallOfFame">
+            <thead>
+            <th>Date</th>
+            <th>Guesses</th>
+            <th>Name</th>
+            <th>Time</th>
+            </thead>
             <tbody>
-            {entries.map(({id, date, guesses, player}) => (
+            {entries.map(({id, date, guesses, player, time}) => (
                 <tr key={id}>
                     <td className="date">{date}</td>
                     <td className="guesses">{guesses}</td>
                     <td className="player">{player}</td>
+                    <td className="time">{time}</td>
                 </tr>
             ))}
             </tbody>
@@ -32,15 +39,6 @@ HallOfFame.propTypes = {
 };
 
 export default HallOfFame
-
-// == Internal helpers ==============================================
-
-export const FAKE_HOF = [
-    {id: 3, guesses: 18, date: '10/10/2017', player: 'Jane'},
-    {id: 2, guesses: 23, date: '11/10/2017', player: 'Kevin'},
-    {id: 1, guesses: 31, date: '06/10/2017', player: 'Louisa'},
-    {id: 0, guesses: 48, date: '14/10/2017', player: 'Marc'},
-]
 
 const HOF_KEY = '::Memory::HallofFame'
 const HOF_MAX_SIZE = 10

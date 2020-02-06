@@ -13,7 +13,11 @@ class HighScoreInput extends Component {
     };
     persistWinner = event => {
         event.preventDefault();
-        const newEntry = {guesses: this.props.guesses, player: this.state.winner}
+        const timerTime = this.props.time
+        let seconds = Math.floor(timerTime / 1000) % 60
+        const time = seconds + 's'
+        const newEntry = {guesses: this.props.guesses, player: this.state.winner, time}
+        console.log(this.props.time)
         saveHOFEntry(newEntry, this.props.onStored)
     };
 
@@ -22,7 +26,7 @@ class HighScoreInput extends Component {
             <form className="highScoreInput" onSubmit={this.persistWinner}>
                 <p>
                     <label>
-                        <span className="badge badge-success">Bravo</span> ! Enter your name :
+                        <span className="badge badge-success">Good Work</span> ! Enter your name :
                         <input
                             className="form-control"
                             type="text"
@@ -31,7 +35,7 @@ class HighScoreInput extends Component {
                             onChange={this.handleWinnerUpdate}
                         />
                     </label>
-                    <Button variant="success" type={"submit"}>J'ai gagné</Button>
+                    <Button variant="success" type={"submit"}>I won</Button>
                 </p>
             </form>
         )

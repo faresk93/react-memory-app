@@ -19,6 +19,7 @@ const DEFAULT_STATE = {
     hallOfFame: null,
     gameStart: false,
     gameStarted: false,
+    timer: null,
     timerOn: false,
     timerStart: 0,
     timerTime: 0,
@@ -40,7 +41,7 @@ class App extends Component {
         this.setState({gameStart: true, gameStarted: false, countDown: 3})
         this.countDown = setInterval(() => {
             this.setState({
-                countDown: --this.state.countDown
+                countDown: this.state.countDown - 1
             })
         }, 1000)
         setTimeout(() => {
@@ -50,16 +51,20 @@ class App extends Component {
         }, SHOW_CARDS_TIMEOUT)
     };
     startTimer = () => {
+        clearInterval(this.timer);
         this.setState({
             timerOn: true,
             timerTime: this.state.timerTime,
             timerStart: Date.now() - this.state.timerTime
         });
+        // this.setState({
         this.timer = setInterval(() => {
             this.setState({
                 timerTime: Date.now() - this.state.timerStart
             });
-        }, 10);
+        }, 10)
+        console.log('timer', this.timer)
+        // })
     };
 
     componentDidMount() {
@@ -104,8 +109,6 @@ class App extends Component {
 
     onHandleDifficulty = (event) => {
         const difficulty = +event.target.value;
-        console.log(difficulty)
-        clearInterval(this.timer);
         this.setState({
             ...DEFAULT_STATE,
             difficulty,
@@ -130,7 +133,7 @@ class App extends Component {
     };
 
     handleNewPairClosedBy(index, event) {
-        const {cards, currentPair, guesses, matchedCardsIndexes} = this.state
+        let {cards, currentPair, guesses, matchedCardsIndexes} = this.state
         if (currentPair[0] === index) {
             return;
         }
@@ -139,8 +142,18 @@ class App extends Component {
         const matched = cards[newPair[0]] === cards[newPair[1]]
         this.setState({currentPair: newPair, guesses: newGuesses})
         if (matched) {
-            this.setState({matchedCardsIndexes: [...matchedCardsIndexes, ...newPair]})
+            this.setState((prevState, props) => (
+                {matchedCardsIndexes: [...prevState.matchedCardsIndexes, ...newPair]}
+            ), () => {
+                const won = this.state.matchedCardsIndexes.length === cards.length;
+                if (won) {
+                    console.log('won', this.timer)
+                    clearInterval(this.timer);
+                    // this.setState({timerOn: false});
+                }
+            })
         }
+
         setTimeout(() => this.setState({currentPair: []}), VISUAL_PAUSE_MSECS)
     }
 
@@ -203,7 +216,8 @@ class App extends Component {
                             </div>
                             {won && (
                                 hallOfFame ? <HallOfFame entries={hallOfFame}/> :
-                                    <HighScoreInput guesses={guesses} onStored={this.displayHOF}/>
+                                    <HighScoreInput time={this.state.timerTime} guesses={guesses}
+                                                    onStored={this.displayHOF}/>
                             )}
                         </div>
                     </div>) :
